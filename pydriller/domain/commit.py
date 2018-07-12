@@ -13,10 +13,7 @@
 # limitations under the License.
 import logging
 import os
-from _datetime import datetime
-from typing import List, Set
-from enum import Enum
-
+from datetime import datetime
 from git import Repo, Diff, Git, Commit as GitCommit
 
 
@@ -26,7 +23,7 @@ from pydriller.domain.developer import Developer
 NULL_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 
 
-class ModificationType(Enum):
+class ModificationType(object):
     ADD = 1,
     COPY = 2,
     RENAME = 3,
@@ -35,9 +32,9 @@ class ModificationType(Enum):
 
 
 class Modification:
-    def __init__(self, old_path: str, new_path: str,
-                 change_type: ModificationType,
-                 diff_text: str, sc: str):
+    def __init__(self, old_path, new_path,
+                 change_type,
+                 diff_text, sc):
         """
         Initialize a modification. A modification carries on information regarding
         the changed file. Normally, you shouldn't initialize a new one.
@@ -49,7 +46,7 @@ class Modification:
         self.source_code = sc
 
     @property
-    def added(self) -> int:
+    def added(self):
         """
         Return the total number of added lines in the file.
 
@@ -75,13 +72,13 @@ class Modification:
         return removed
 
     @property
-    def filename(self) -> str:
+    def filename(self):
         """
         Return the filename. Given a path-like-string (e.g.
         "/Users/dspadini/pydriller/myfile.py") returns only the filename
         (e.g. "myfile.py")
 
-        :return: str filename
+        :return filename
         """
         if self.new_path is not None and self.new_path != "/dev/null":
             path = self.new_path
@@ -114,7 +111,7 @@ class Modification:
 
 
 class Commit:
-    def __init__(self, commit: GitCommit, path: str, main_branch: str) -> None:
+    def __init__(self, commit, path, main_branch):
         """
         Create a commit object.
         """
@@ -123,16 +120,16 @@ class Commit:
         self._main_branch = main_branch
 
     @property
-    def hash(self) -> str:
+    def hash(self):
         """
         Return the SHA of the commit.
 
-        :return: str hash
+        :return hash
         """
         return self._c_object.hexsha
 
     @property
-    def author(self) -> Developer:
+    def author(self):
         """
         Return the author of the commit as a Developer object.
 
@@ -141,7 +138,7 @@ class Commit:
         return Developer(self._c_object.author.name, self._c_object.author.email)
 
     @property
-    def committer(self) -> Developer:
+    def committer(self):
         """
         Return the committer of the commit as a Developer object.
 
@@ -150,7 +147,7 @@ class Commit:
         return Developer(self._c_object.committer.name, self._c_object.committer.email)
 
     @property
-    def author_date(self) -> datetime:
+    def author_date(self):
         """
         Return the authored datetime.
 
@@ -159,7 +156,7 @@ class Commit:
         return self._c_object.authored_datetime
 
     @property
-    def committer_date(self) -> datetime:
+    def committer_date(self):
         """
         Return the committed datetime.
 
@@ -168,7 +165,7 @@ class Commit:
         return self._c_object.committed_datetime
 
     @property
-    def author_timezone(self) -> int:
+    def author_timezone(self):
         """
         Author timezone expressed in seconds from epoch.
 
@@ -177,7 +174,7 @@ class Commit:
         return self._c_object.author_tz_offset
 
     @property
-    def committer_timezone(self) -> int:
+    def committer_timezone(self):
         """
         Author timezone expressed in seconds from epoch.
 
@@ -186,16 +183,16 @@ class Commit:
         return self._c_object.committer_tz_offset
 
     @property
-    def msg(self) -> str:
+    def msg(self):
         """
         Return commit message.
 
-        :return: str commit_message
+        :return commit_message
         """
         return self._c_object.message.strip()
 
     @property
-    def parents(self) -> List[str]:
+    def parents(self):
         """
         Return the list of parents SHAs.
 
@@ -207,7 +204,7 @@ class Commit:
         return parents
 
     @property
-    def merge(self) -> bool:
+    def merge(self):
         """
         Return True if the commit is a merge, False otherwise.
 
@@ -216,7 +213,7 @@ class Commit:
         return len(self._c_object.parents) > 1
 
     @property
-    def modifications(self) -> List[Modification]:
+    def modifications(self):
         """
         Return a list of modified files.
 
@@ -235,7 +232,7 @@ class Commit:
 
         return self._parse_diff(diff_index)
 
-    def _parse_diff(self, diff_index) -> List[Modification]:
+    def _parse_diff(self, diff_index):
         modifications_list = []
         for d in diff_index:
             old_path = d.a_path
@@ -256,7 +253,7 @@ class Commit:
         return modifications_list
 
     @property
-    def in_main_branch(self) -> bool:
+    def in_main_branch(self):
         """
         Return True if the commit is in the main branch, False otherwise.
 
@@ -265,7 +262,7 @@ class Commit:
         return self._main_branch in self.branches
 
     @property
-    def branches(self) -> Set[str]:
+    def branches(self):
         """
         Return the set of branches that contain the commit.
 
@@ -277,7 +274,7 @@ class Commit:
             branches.add(branch.strip().replace('* ', ''))
         return branches
 
-    def _from_change_to_modification_type(self, d: Diff):
+    def _from_change_to_modification_type(self, d):
         if d.new_file:
             return ModificationType.ADD
         elif d.deleted_file:

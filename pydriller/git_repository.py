@@ -14,7 +14,6 @@
 
 import os
 import logging
-from typing import List, Dict, Tuple, Set
 from git import Git, Repo, GitCommandError, Commit as GitCommit
 from pydriller.domain.commit import Commit, ModificationType, Modification
 from threading import Lock
@@ -24,7 +23,7 @@ NULL_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 
 
 class GitRepository:
-    def __init__(self, path: str):
+    def __init__(self, path):
         """
         Init the Git Repository.
 
@@ -34,11 +33,11 @@ class GitRepository:
         self.main_branch = None
         self.lock = Lock()
 
-    def _open_git(self) -> Git:
+    def _open_git(self):
         self._open_repository()
         return Git(self.path)
 
-    def _open_repository(self) -> Repo:
+    def _open_repository(self):
         repo = Repo(self.path)
         if self.main_branch is None:
             self._discover_main_branch(repo)
@@ -47,7 +46,7 @@ class GitRepository:
     def _discover_main_branch(self, repo):
         self.main_branch = repo.active_branch.name
 
-    def get_head(self) -> Commit:
+    def get_head(self):
         """
         Get the head commit.
 
@@ -57,7 +56,7 @@ class GitRepository:
         head_commit = repo.head.commit
         return Commit(head_commit, self.path, self.main_branch)
 
-    def get_list_commits(self) -> List[Commit]:
+    def get_list_commits(self):
         """
         Return the list of all the commits in the repo.
 
@@ -65,7 +64,7 @@ class GitRepository:
         """
         return self._get_all_commits()
 
-    def _get_all_commits(self) -> List[Commit]:
+    def _get_all_commits(self):
         repo = self._open_repository()
 
         all_commits = []
@@ -73,7 +72,7 @@ class GitRepository:
             all_commits.append(self.get_commit_from_gitpython(commit))
         return all_commits
 
-    def get_commit(self, commit_id: str) -> Commit:
+    def get_commit(self, commit_id):
         """
         Get the specified commit.
 
@@ -83,7 +82,7 @@ class GitRepository:
         repo = self._open_repository()
         return Commit(repo.commit(commit_id), self.path, self.main_branch)
 
-    def get_commit_from_gitpython(self, commit: GitCommit) -> Commit:
+    def get_commit_from_gitpython(self, commit):
         """
         Build a PyDriller commit object from a GitPython commit object.
         This is internal of PyDriller, I don't think users generally will need
@@ -94,7 +93,7 @@ class GitRepository:
         """
         return Commit(commit, self.path, self.main_branch)
 
-    def checkout(self, _hash: str) -> None:
+    def checkout(self, _hash):
         """
         Checkout the repo at the speficied commit.
         BE CAREFUL: this will change the state of the repo, hence it should *not*
@@ -107,14 +106,14 @@ class GitRepository:
             self._delete_tmp_branch()
             git.checkout('-f', _hash, b='_PD')
 
-    def _delete_tmp_branch(self) -> None:
+    def _delete_tmp_branch(self):
         repo = self._open_repository()
         try:
             repo.delete_head('_PD')
         except GitCommandError:
             logger.debug("Branch _PD not found")
 
-    def files(self) -> List[str]:
+    def files(self):
         """
         Obtain the list of the files (excluding .git directory).
 
@@ -128,7 +127,7 @@ class GitRepository:
                 _all.append(os.path.join(path, name))
         return _all
 
-    def reset(self) -> None:
+    def reset(self):
         """
         Reset the state of the repo, checking out the main branch and discarding
         local changes (-f option).
@@ -139,7 +138,7 @@ class GitRepository:
             git.checkout('-f', self.main_branch)
             self._delete_tmp_branch()
 
-    def total_commits(self) -> int:
+    def total_commits(self):
         """
         Calculate total number of commits.
 
@@ -147,7 +146,7 @@ class GitRepository:
         """
         return len(self.get_list_commits())
 
-    def get_commit_from_tag(self, tag: str) -> Commit:
+    def get_commit_from_tag(self, tag):
         """
         Obtain the tagged commit.
 
@@ -162,7 +161,7 @@ class GitRepository:
             logger.debug('Tag {} not found'.format(tag))
             raise
 
-    def parse_diff(self, diff: str) -> Dict[str, List[Tuple[int, str]]]:
+    def parse_diff(self, diff):
         """
         Given a diff, returns a dictionary with the added and deleted lines.
         The dictionary has 2 keys: "added" and "deleted", each containing the
@@ -205,7 +204,7 @@ class GitRepository:
         additions_line_number = int(numbers_new_file.split(",")[0]) - 1
         return delete_line_number, additions_line_number
 
-    def get_commits_last_modified_lines(self, commit: Commit, modification: Modification = None) -> Set[str]:
+    def get_commits_last_modified_lines(self, commit, modification = None):
         """
         Given the Commit object, returns the set of commits that last "touched" the lines
         that are modified in the files included in the commit. It applies SZZ.
@@ -249,7 +248,7 @@ class GitRepository:
 
         return buggy_commits
 
-    def _useless_line(self, line: str):
+    def _useless_line(self, line):
         # this covers comments in Java and Python, as well as empty lines. More have to be added!
         return line.startswith('//') or line.startswith('#') or line.startswith("/*") or \
                line.startswith("'''") or line.startswith('"""') or line == '' or line.startswith("*")

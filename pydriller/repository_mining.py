@@ -17,7 +17,6 @@ import logging
 import pytz as pytz
 
 from pydriller.domain.commit import Commit
-from typing import List, Generator
 from pydriller.git_repository import GitRepository
 from datetime import datetime
 
@@ -25,16 +24,16 @@ logger = logging.getLogger(__name__)
 
 
 class RepositoryMining:
-    def __init__(self, path_to_repo: str,
-                 single: str = None,
-                 since: datetime = None, to: datetime = None,
-                 from_commit: str = None, to_commit: str = None,
-                 from_tag: str = None, to_tag: str = None,
-                 reversed_order: bool = False,
-                 only_in_main_branch: bool = False,
-                 only_in_branches: List[str]= None,
-                 only_modifications_with_file_types: List[str] = None,
-                 only_no_merge: bool = False):
+    def __init__(self, path_to_repo,
+                 single = None,
+                 since = None, to = None,
+                 from_commit = None, to_commit = None,
+                 from_tag = None, to_tag = None,
+                 reversed_order = False,
+                 only_in_main_branch = False,
+                 only_in_branches = None,
+                 only_modifications_with_file_types = None,
+                 only_no_merge = False):
         """
         Init a repository mining.
 
@@ -91,7 +90,7 @@ class RepositoryMining:
                 raise Exception('You can not specify <to date> or <to commit> when using <to tag>')
             self.to = self.git_repo.get_commit_from_tag(to_tag).author_date
 
-    def traverse_commits(self) -> Generator[Commit, None, None]:
+    def traverse_commits(self):
         """
         Analyze all the specified commits (all of them by default), returning
         a generator of commits.
@@ -112,7 +111,7 @@ class RepositoryMining:
 
             yield commit
 
-    def _is_commit_filtered(self, commit: Commit):
+    def _is_commit_filtered(self, commit):
         if self.only_in_main_branch is True and commit.in_main_branch is False:
             logger.debug('Commit filtered for main branch')
             return True
@@ -129,7 +128,7 @@ class RepositoryMining:
             return True
         return False
 
-    def _commit_branch_in_branches(self, commit: Commit):
+    def _commit_branch_in_branches(self, commit):
         for branch in commit.branches:
             if branch in self.only_in_branches:
                 return True
@@ -141,7 +140,7 @@ class RepositoryMining:
                 return True
         return False
 
-    def _apply_filters_on_commits(self, all_commits: List[Commit]):
+    def _apply_filters_on_commits(self, all_commits):
         res = []
 
         if self._all_filters_are_none():

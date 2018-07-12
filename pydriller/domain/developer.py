@@ -13,7 +13,7 @@
 # limitations under the License.
 
 class Developer:
-    def __init__(self, name: str, email: str):
+    def __init__(self, name, email):
         """
         Class to identify a developer.
 

@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ['gitpython', 'typing', 'pytz']
-test_requires = ['pytest', 'psutil', 'requests']
+install_requires = ['gitpython', 'pytz']
 
 # Get the long description from the relevant file
 long_description = 'PyDriller is a Python framework that helps developers on mining software repositories. ' \
@@ -20,9 +19,8 @@ setup(
     url='https://github.com/ishepard/pydriller',
     license='Apache License',
     package_dir={'pydriller': 'pydriller'},
-    python_requires='>=3.4',
+    python_requires='>=2.7',
     install_requires=install_requires,
-    test_requirements=test_requires + install_requires,
     classifiers=[
             # How mature is this project? Common values are
             #   3 - Alpha
@@ -33,6 +31,7 @@ setup(
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
+            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
