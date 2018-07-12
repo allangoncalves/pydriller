@@ -103,10 +103,10 @@ class RepositoryMining:
 
         for commit in all_cs:
             logger.info('Commit #{} in {} from {}'
-                         .format(commit.hash, commit.author_date, commit.author.name))
+                         .format(commit.hash.encode('utf-8'), commit.author_date, commit.author.name.encode('utf-8')))
 
             if self._is_commit_filtered(commit):
-                logger.info('Commit #{} filtered'.format(commit.hash))
+                logger.info('Commit #{} filtered'.format(commit.hash.encode('utf-8')))
                 continue
 
             yield commit
