@@ -1,8 +1,3 @@
-[![Build Status](https://travis-ci.org/ishepard/pydriller.svg?branch=master)](https://travis-ci.org/ishepard/pydriller)
-[![BCH compliance](https://bettercodehub.com/edge/badge/ishepard/pydriller?branch=master&token=fdd54de940e65d248cd892ac8791a1445f38c88f)](https://bettercodehub.com/)
-[![codecov](https://codecov.io/gh/ishepard/pydriller/branch/master/graph/badge.svg)](https://codecov.io/gh/ishepard/pydriller)
-
-
 # PyDriller
 
 PyDriller is a Python framework that helps developers on mining software repositories. With PyDriller you can easily extract information from any Git repository, such as commits, developers, modifications, diffs, and source codes, and quickly export to CSV files.
@@ -11,53 +6,26 @@ PyDriller is a Python framework that helps developers on mining software reposit
 
 
 # REQUIREMENTS
-Very few! Just:
+This fork is an adaption to Pydriller with Python2.x.
 
-- Python3
+You'll need only:
+
+- Python2.7 >=
 - Git
-
-The list of dependencies are listed in ./requirements.txt, however the installer takes care of installing them for you.
 
 # INSTALL
 
-Installing PyDriller is easily done using pip. Assuming it is installed, just run the following from the command-line:
+Download the source-code and run the following command line:
 
-```
-pip install pydriller
-```
-This will also install the necessary dependencies.
-
-# SOURCE CODE
-
-If you like to clone from source, you can do it with very simple steps.
+- python setup.py install
 
 ## OPTIONAL
 
 It is suggested to make use of `virtualenv`:
 
 ```
-> virtualenv -p python3 venv
+> virtualenv --clear venv
 > source venv/bin/activate
-```
-
-## INSTALL FROM SOURCE
-Clone the repo:
-
-```
-> git clone https://github.com/ishepard/pydriller.git
-```
-
-install the requirements:
-
-```
-> cd pydriller
-> pip install -r requirements
-> unzip test-repos.zip
-```
-and run the tests using pytest:
-
-```
-> pytest
 ```
 
 
@@ -71,7 +39,6 @@ or have a look at our [example](https://github.com/ishepard/pydriller/tree/maste
 ## How do I cite PyDriller?
 
 For now, cite the repository.
-
 
 # License
 
